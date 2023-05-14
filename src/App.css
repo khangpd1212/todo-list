@@ -1,5 +1,6 @@
 .ant-form-item-explain {
   text-align: left;
+  margin-bottom: 12px;
 }
 .ant-input::placeholder {
   color: var(--gray300);

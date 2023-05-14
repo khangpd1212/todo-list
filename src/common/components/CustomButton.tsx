@@ -16,6 +16,9 @@ const ButtonStyle = styled(Button)`
   gap: 10px;
   border-radius: 8px;
   width: 100%;
+  &.ant-btn >.anticon+span{
+    margin-inline-start: 0px;
+  }
   &.ant-btn-primary {
     background-color: var(--primary);
     font-size: 16px;
@@ -25,5 +28,10 @@ const ButtonStyle = styled(Button)`
   }
   &.ant-btn-primary:hover {
     background-color: #2e466e;
+  }
+  &.ant-btn-default{
+    color: var(--primary);
+    font-size: 16px;
+    font-weight: 600;
   }
 `;

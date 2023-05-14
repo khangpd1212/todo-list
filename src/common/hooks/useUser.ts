@@ -1,20 +1,18 @@
-import { useContext } from "react";
+import { User } from "../../features/auth/state/AuthState";
 import { useLocalStorage } from "./useLocalStorage";
-import { AuthContext } from "../contexts/AuthContext";
-import { User } from "../types/auth";
-
 export const useUser = () => {
-  const { user, setUser } = useContext(AuthContext);
-  const { setItem } = useLocalStorage();
+  const { getItem, setItem } = useLocalStorage();
 
   const addUser = (user: User) => {
-    setUser(user);
-    setItem("user", JSON.stringify(user));
+    return setItem("user", JSON.stringify(user));
   };
 
   const removeUser = () => {
-    setUser(null);
-    setItem("user", "");
+    return setItem("user", "");
   };
-  return { user, addUser, removeUser };
+
+  const getUser = () => {
+    return getItem("user")
+  }
+  return {getUser, addUser, removeUser };
 };

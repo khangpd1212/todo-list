@@ -16,7 +16,7 @@ export default function Auth() {
 const BgAuth = styled.div`
   width: 100%;
   height: 100vh;
-  padding: 0px 24.2em;
+  padding: 0px max(5em, 50vw - 24.2em);
   background: linear-gradient(
     270deg,
     #134ba4 -0.73%,
@@ -26,6 +26,7 @@ const BgAuth = styled.div`
 `;
 const ContainerForm = styled.div`
   height: 100%;
+  padding: 0px 8.62em;
   background-color: var(--white);
   border-radius: 60px;
   display: flex;
