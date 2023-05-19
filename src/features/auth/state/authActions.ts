@@ -1,14 +1,16 @@
-// authActions.js
-import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { User } from "./AuthState";
+import { RequestLoginUser, RequestNewUser, User } from "./AuthState";
 import axiosBaseURL from "../../../common/utils/httpCommon";
+import { AxiosResponse } from "axios";
 
 export const registerUser = createAsyncThunk(
   "auth/register",
-  async ({ username, email, password }: User, { rejectWithValue }) => {
+  async (
+    { username, email, password }: RequestNewUser,
+    { rejectWithValue }
+  ) => {
     try {
-      await axiosBaseURL.post(`users`, { username, email, password });
+      return await axiosBaseURL.post(`users`, { username, email, password });
     } catch (error: any) {
       if (error.response && error.response.data.message) {
         return rejectWithValue(error.response.data.message);
@@ -19,14 +21,23 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-export const loginUser = createAsyncThunk<User, User, { rejectValue: string }>(
+export const loginUser = createAsyncThunk<
+  User,
+  RequestLoginUser,
+  { rejectValue: string }
+>(
   "auth/login",
-  async (data: User, thunkAPI) => {
+  async ({ email, password }: RequestLoginUser, { rejectWithValue }) => {
     try {
-      // const responsive = await axios.post("https://api.github.com/repos/github/hub/issues", data);
-      return data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue("Failed to fetch issues.");
+      const response: AxiosResponse<{ user: User }, User> =
+        await axiosBaseURL.post(`login`, { email, password });
+      return response.data.user;
+    } catch (error: any) {
+      if (error.response && error.response.data.message) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue(error.message);
+      }
     }
   }
 );

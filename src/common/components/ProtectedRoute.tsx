@@ -4,10 +4,8 @@ type Props = {
   children: JSX.Element;
 };
 export const ProtectedRoute = ({ children }: Props) => {
-  const { getUser } = useUser();
-  const user = getUser()
-  if (!user) {
-    // user is not authenticated
+  const { checkToken } = useUser();
+  if (!checkToken()) {
     return <Navigate to="/" />;
   }
   return children;

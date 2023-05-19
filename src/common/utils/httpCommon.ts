@@ -1,5 +1,7 @@
 import Axios from "axios";
+const token = JSON.parse(localStorage.getItem("user")!).token;
 const axiosBaseURL = Axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
+  baseURL: "http://localhost:3000/api/",
+  headers: { Authorization: "Bearer " + token },
 });
 export default axiosBaseURL;

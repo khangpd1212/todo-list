@@ -6,7 +6,7 @@ export default function FormTask(props: FormProps) {
   return (
     <Form layout="vertical" name="formTask" {...props}>
       <Form.Item
-        name="taskName"
+        name="title"
         rules={[
           {
             required: true,

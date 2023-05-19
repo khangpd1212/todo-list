@@ -1,7 +1,7 @@
 export type AsyncData<T> = {
   loading: boolean;
   error: string | null;
-  data: T | null;
+  data: T;
 };
 
 export const asyncDataInitialState = {

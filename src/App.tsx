@@ -1,6 +1,6 @@
 import "antd/dist/reset.css";
 import { Provider } from "react-redux";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import "./App.css";
 import { ProtectedRoute } from "./common/components/ProtectedRoute";
 import Auth from "./features/auth";
@@ -10,6 +10,8 @@ import ManageUser from "./features/user";
 import ContainerLayout from "./layouts/ContainerLayout";
 import { store } from "./store/store";
 import ManageTask from "./features/manage-task";
+import { useEffect } from "react";
+import { useUser } from "./common/hooks/useUser";
 
 function App() {
   return (
@@ -38,7 +40,6 @@ function App() {
               }
             ></Route>
           </Route>
-
         </Routes>
       </Provider>
     </div>

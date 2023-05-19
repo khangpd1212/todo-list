@@ -12,7 +12,13 @@ export const useUser = () => {
   };
 
   const getUser = () => {
-    return getItem("user")
-  }
-  return {getUser, addUser, removeUser };
+    const jsonUser = getItem("user");
+    const user: User = jsonUser ? JSON.parse(jsonUser) : {};
+    return user;
+  };
+
+  const checkToken = () => {
+    return getUser()?.token ? true : false;
+  };
+  return { checkToken, getUser, addUser, removeUser };
 };

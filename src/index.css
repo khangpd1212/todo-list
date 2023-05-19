@@ -5,11 +5,27 @@
   --primary: #36517c;
   --gray200: #ece9e7;
   --gray300: #abacac;
-  --gray400: #ABACAC;
+  --gray400: #abacac;
   --gray500: #6f7474;
 }
 body {
   font-family: "Inter", sans-serif;
   font-size: 14px;
   font-weight: 400;
+}
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track-piece {
+  background: #e4e4e4;
+  border-radius: 8px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #bcbcbc;
+  border-radius: 8px;
 }

@@ -3,10 +3,18 @@ import CustomButton from "../../common/components/CustomButton";
 import CustomDivider from "../../common/components/CustomDivider";
 import CustomInput from "../../common/components/CustomInput";
 import CustomInputPassword from "../../common/components/CustomInputPassword";
+import { AppDispatch, useAppDispatch } from "../../store/store";
 import HeadingAuth from "./components/HeadingAuth";
 import LinkNavigation from "./components/LinkNavigation";
 import LoginSocial from "./components/LoginSocial";
+import { registerUser } from "./state/authActions";
+import { RequestNewUser } from "./state/AuthState";
+
 export default function Register() {
+  const dispatch: AppDispatch = useAppDispatch();
+  const handleRegister = (values: RequestNewUser) => {
+    dispatch(registerUser(values));
+  };
   return (
     <>
       <HeadingAuth title="Register Account" />
@@ -16,7 +24,7 @@ export default function Register() {
         name="form-login"
         style={{ maxWidth: 600 }}
         layout="vertical"
-        // onFinish={onFinish}
+        onFinish={handleRegister}
         // onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
@@ -41,7 +49,9 @@ export default function Register() {
           <CustomInputPassword placeholder="Password" />
         </Form.Item>
         <Form.Item>
-          <CustomButton type="primary">Sign up</CustomButton>
+          <CustomButton type="primary" htmlType="submit">
+            Sign up
+          </CustomButton>
         </Form.Item>
       </Form>
       <LinkNavigation url="/login">Login account</LinkNavigation>
