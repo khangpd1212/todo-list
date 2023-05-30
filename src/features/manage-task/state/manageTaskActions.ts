@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
-import axiosBaseURL from "../../../common/utils/httpCommon";
+import axiosBaseURL from "../../../configs/axios";
 import { Article, RequestTask, Task } from "./ManageTaskState";
 
 export const getTasks = createAsyncThunk(

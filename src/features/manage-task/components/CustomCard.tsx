@@ -3,35 +3,32 @@ import { styled } from "styled-components";
 
 const { Meta } = Card;
 interface CustomCardProps {
-  heading: string;
-  description: string;
+  title: string;
+  description?: string;
   imgSrc?: string;
 }
 function CustomCard(props: CustomCardProps & CardProps) {
-  const { heading, description, imgSrc } = props;
+  const { title, description, imgSrc, ...propsOther } = props;
   return (
-    <CardStyle
-      style={{ width: "100%" }}
-      cover={<ImgStyle />}
-      hoverable
-      {...props}
-    >
-      <Meta
-        title={<TitleCard>{heading}</TitleCard>}
-        description={description}
-      />
+    <CardStyle cover={<ImgStyle src={imgSrc} />} {...propsOther}>
+      <Meta title={<TitleCard>{title}</TitleCard>} description={description} />
     </CardStyle>
   );
 }
 const CardStyle = styled(Card)`
-  border: 1px solid rgba(35, 35, 35, 0.2);
+  border: 1px solid rgba(35, 35, 35, 0.16);
   background-color: #fcfffc;
-  width: 260px;
+  &:hover {
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.26);
+  }
   .ant-card-extra {
     font-size: 20px;
   }
   .ant-card-body {
     padding: 16px;
+    .ant-card-meta-title {
+      margin-bottom: 0 !important;
+    }
   }
 `;
 
@@ -40,11 +37,12 @@ const TitleCard = styled.div`
   color: var(--primary);
 `;
 
-const ImgStyle = styled.div`
-  background-image: url("https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png");
+const ImgStyle = styled.div<{ src?: string }>`
+  background-image: url(${(props) => props.src});
   width: 260px !important;
-  height: 200px;
-  background-position: 50%;
+  height: ${(props) => (props.src ? "170px" : "0")};
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
   background-size: cover;
   background-repeat: no-repeat;
 `;

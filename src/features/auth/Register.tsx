@@ -3,17 +3,15 @@ import CustomButton from "../../common/components/CustomButton";
 import CustomDivider from "../../common/components/CustomDivider";
 import CustomInput from "../../common/components/CustomInput";
 import CustomInputPassword from "../../common/components/CustomInputPassword";
-import { AppDispatch, useAppDispatch } from "../../store/store";
+import { createWithEmailAndPassword } from "../../services/auth";
 import HeadingAuth from "./components/HeadingAuth";
 import LinkNavigation from "./components/LinkNavigation";
 import LoginSocial from "./components/LoginSocial";
-import { registerUser } from "./state/authActions";
 import { RequestNewUser } from "./state/AuthState";
 
 export default function Register() {
-  const dispatch: AppDispatch = useAppDispatch();
   const handleRegister = (values: RequestNewUser) => {
-    dispatch(registerUser(values));
+    createWithEmailAndPassword(values);
   };
   return (
     <>

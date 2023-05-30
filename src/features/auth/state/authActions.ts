@@ -1,7 +1,9 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { RequestLoginUser, RequestNewUser, User } from "./AuthState";
-import axiosBaseURL from "../../../common/utils/httpCommon";
 import { AxiosResponse } from "axios";
+import axiosBaseURL from "../../../configs/axios";
+import { auth } from "../../../configs/firebase";
+import { RequestLoginUser, RequestNewUser, User } from "./AuthState";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 
 export const registerUser = createAsyncThunk(
   "auth/register",
@@ -10,7 +12,15 @@ export const registerUser = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      return await axiosBaseURL.post(`users`, { username, email, password });
+      return createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log("🚀 ~ file: authActions.ts:18 ~ .then ~ user:", user);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+        });
     } catch (error: any) {
       if (error.response && error.response.data.message) {
         return rejectWithValue(error.response.data.message);

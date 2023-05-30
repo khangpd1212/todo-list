@@ -1,39 +1,46 @@
-import { Form } from "antd";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { Form, notification } from "antd";
 import { useNavigate } from "react-router-dom";
 import CustomButton from "../../common/components/CustomButton";
 import CustomDivider from "../../common/components/CustomDivider";
 import CustomInput from "../../common/components/CustomInput";
 import CustomInputPassword from "../../common/components/CustomInputPassword";
 import { useUser } from "../../common/hooks/useUser";
-import { AppDispatch, RootState, useAppDispatch } from "../../store/store";
+import { loginWithEmailAndPassword } from "../../services/auth";
 import HeadingAuth from "./components/HeadingAuth";
 import LinkNavigation from "./components/LinkNavigation";
 import LoginSocial from "./components/LoginSocial";
 import { RequestLoginUser } from "./state/AuthState";
-import { loginUser } from "./state/authActions";
 export default function Login() {
-  const { addUser, checkToken } = useUser();
-  const { loading, data, error } = useSelector(
-    (state: RootState) => state.auth
-  );
-  const dispatch: AppDispatch = useAppDispatch();
+  const { addUser, setToken } = useUser();
   const navigate = useNavigate();
 
-  function handleLogin({ email, password }: RequestLoginUser) {
-    dispatch(loginUser({ email, password }));
+  async function handleLogin({ email, password }: RequestLoginUser) {
+    try {
+      const user = await loginWithEmailAndPassword({ email, password });
+
+      addUser({
+        uid: user.uid,
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+      });
+      const token = await user.getIdToken();
+      setToken(token);
+      navigate("/manage-user");
+    } catch (error: any) {
+      notification.error({
+        message: "Error",
+        description: error.message,
+      });
+    }
   }
 
-  useEffect(() => {
-    data && addUser(data);
-  }, [data, addUser]);
-
-  useEffect(() => {
-    if (checkToken()) {
-      navigate("/manage-user");
-    }
-  }, [navigate, checkToken]);
+  // useEffect(() => {
+  //   data && addUser(data);
+  //   getAllUser.forEach((doc) => {
+  //     console.log(doc.data());
+  //   });
+  // }, [data]);
 
   return (
     <>
@@ -66,7 +73,7 @@ export default function Login() {
           <CustomInputPassword placeholder="Password" />
         </Form.Item>
         <Form.Item>
-          <CustomButton type="primary" htmlType="submit" loading={loading}>
+          <CustomButton type="primary" htmlType="submit">
             Sign in
           </CustomButton>
         </Form.Item>

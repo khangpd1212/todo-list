@@ -1,98 +1,136 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { Form } from "antd";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useRef, useState } from "react";
 import { styled } from "styled-components";
 import CustomButton from "../../common/components/CustomButton";
 import CustomModal from "../../common/components/CustomModal";
-import { RootState, useAppDispatch } from "../../store/store";
+import { StatusTask } from "../../common/types/common";
+import { RequestTask, Task } from "../../common/types/task";
+import { addTask, getTasks, updateTask } from "../../services/task";
 import CardProcess from "./components/CardProcess";
+import CardTextArea from "./components/CardTextArea";
 import CustomCard from "./components/CustomCard";
 import FormTask from "./components/FormTask";
-import { Article, RequestArticle } from "./state/ManageTaskState";
-import { getTask, getTasks, updateTask } from "./state/manageTaskActions";
+import { ContainerFlexButton } from "../../common/styles";
 
-const style = {
-  button: {
-    justifyContent: "flex-start",
-  },
-};
 function ManageTask() {
-  const dispatch = useAppDispatch();
-  const { loading, data } = useSelector((state: RootState) => state.manageTask);
-  const [form] = Form.useForm<RequestArticle>();
+  const [form] = Form.useForm<Task>();
   const [openModal, setOpenModal] = useState(false);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [isActionAdd, setIsActionAdd] = useState(false);
+  const [titleTask, setTitleTask] = useState("");
+  const itemCardRef = useRef<HTMLDivElement>();
+  const taskId = useRef("");
 
-  useEffect(() => {
-    dispatch(getTasks());
-  }, [dispatch]);
+  const fetchTasks = () => {
+    getTasks((docs) => {
+      const data = docs.map((doc) => ({ ...doc.data(), id: doc.id } as Task));
+      setTasks(data);
+    });
+  };
 
-  useEffect(() => {
-    data.article && initialValuesForm(data.article);
-  }, [data.article]);
+  useEffect(() => fetchTasks(), []);
 
-  const showModalUpdate = (slug: string) => {
+  const showModalUpdate = (id: string) => {
+    taskId.current = id;
     setOpenModal(true);
-    dispatch(getTask(slug));
+    const getTask = tasks.find((task) => task.id === id);
+    initialValuesForm(getTask);
   };
 
-  const initialValuesForm = (data: Article) => {
-    console.log(data);
-    if (data)
-      form.setFieldsValue({
-        title: data.title,
-        body: data.body,
-        description: data.description,
-        tagList: data.tagList,
-      });
+  const toggleShowInputTask = () => {
+    // itemCardRef.current.;
+    return setIsActionAdd(!isActionAdd);
   };
+
+  const initialValuesForm = (task?: Task) => {
+    form.setFieldsValue({
+      title: task?.title,
+      description: task?.description,
+      // image: task.image,
+    });
+  };
+
   const cancelModal = () => {
     setOpenModal(false);
+  };
+
+  const handleUpdateTask = (values: RequestTask) => {
+    updateTask(taskId.current, values);
+  };
+
+  const handleAddTask = () => {
+    addTask(titleTask);
+    setIsActionAdd(false);
   };
 
   const submitModal = () => {
     form
       .validateFields()
       .then((values) => {
+        const data = {
+          ...values,
+          image:
+            "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg",
+          status: StatusTask.OPEN,
+        };
+        handleUpdateTask(data);
         form.resetFields();
         setOpenModal(false);
-        handleUpdateTask(values);
       })
       .catch((info) => {
         console.log("Validate Failed:", info);
       });
   };
 
-  const handleUpdateTask = (values: RequestArticle) => {
-    if (data.article) {
-      dispatch(
-        updateTask({
-          slug: data.article.slug,
-          articleData: { ...values, body: "", tagList: [] },
-        })
-      ).then(() => dispatch(getTasks()));
-    }
+  const onChangeTextArea = (value: string) => {
+    setTitleTask(value);
   };
 
+  function BtnAddTitle() {
+    return (
+      <>
+        {isActionAdd ? (
+          <ContainerFlexButton>
+            <StyleBtnAdd type="primary" onClick={handleAddTask} isWidthAuto>
+              Save
+            </StyleBtnAdd>
+            <StyleBtnAdd onClick={toggleShowInputTask} isWidthAuto>
+              Cancel
+            </StyleBtnAdd>
+          </ContainerFlexButton>
+        ) : (
+          <StyleBtnAdd type="text" onClick={toggleShowInputTask}>
+            <PlusOutlined /> Add new task
+          </StyleBtnAdd>
+        )}
+      </>
+    );
+  }
   return (
     <>
       <ContainerCard>
         <WrapperCard>
           <CardProcess title="Open" />
-          <ContainerItemCard>
-            {data &&
-              data.articles.map((task) => (
+          <ContainerItemCard ref={itemCardRef}>
+            {tasks &&
+              tasks.map((task) => (
                 <CustomCard
                   key={task.id}
-                  heading={task.title}
+                  title={task.title}
+                  imgSrc={task.image}
                   description={task.description}
-                  onClick={() => showModalUpdate(task.slug)}
+                  onClick={() => showModalUpdate(task.id)}
                 />
               ))}
+            {isActionAdd && (
+              <CardTextArea
+                placeholder="Input title for this task"
+                callback={onChangeTextArea}
+              />
+            )}
           </ContainerItemCard>
-          <CustomButton type="text" style={style.button}>
-            <PlusOutlined /> Add new task
-          </CustomButton>
+          <BtnAddTitle />
         </WrapperCard>
         <WrapperCard>
           <CardProcess title="Open" count={10} />
@@ -109,7 +147,7 @@ function ManageTask() {
         onOk={submitModal}
         onCancel={cancelModal}
         title="Update a task"
-        okText="Update"
+        okText="Save"
         cancelText="Cancel"
       >
         <FormTask form={form} />
@@ -117,6 +155,12 @@ function ManageTask() {
     </>
   );
 }
+
+const StyleBtnAdd = styled(CustomButton)`
+  text-align: left;
+  padding: 6px 20px;
+`;
+
 const WrapperCard = styled.div`
   display: flex;
   flex-direction: column;
@@ -134,9 +178,12 @@ const ContainerItemCard = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0%;
-  margin-bottom: 24.5px;
+  margin-bottom: 16.5px;
   padding: 12px;
   border: 1px solid rgba(35, 35, 35, 0.2);
   border-radius: 8px;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 export default ManageTask;

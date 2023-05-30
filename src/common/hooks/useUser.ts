@@ -1,9 +1,9 @@
-import { User } from "../../features/auth/state/AuthState";
+import { User } from "firebase/auth";
 import { useLocalStorage } from "./useLocalStorage";
 export const useUser = () => {
   const { getItem, setItem } = useLocalStorage();
 
-  const addUser = (user: User) => {
+  const addUser = (user: Partial<User>) => {
     return setItem("user", JSON.stringify(user));
   };
 
@@ -17,8 +17,15 @@ export const useUser = () => {
     return user;
   };
 
-  const checkToken = () => {
-    return getUser()?.token ? true : false;
+  const setToken = (token: string) => {
+    return setItem("accessToken", JSON.stringify(token));
   };
-  return { checkToken, getUser, addUser, removeUser };
+
+  const token = getItem("accessToken");
+
+  const checkToken = () => {
+    // return true
+    return token ? true : false;
+  };
+  return { checkToken, getUser, addUser, removeUser, token, setToken };
 };

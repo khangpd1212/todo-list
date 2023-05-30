@@ -1,20 +1,28 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { styled } from "styled-components";
+import { useUser } from "../../common/hooks/useUser";
 
 export default function Auth() {
+  const { checkToken } = useUser();
   return (
-    <BgAuth>
-      <ContainerForm>
-        <WrapperForm>
-          <Outlet />
-        </WrapperForm>
-      </ContainerForm>
-    </BgAuth>
+    <>
+      {checkToken() ? (
+        <Navigate to="/manage-user" />
+      ) : (
+        <BgAuth>
+          <ContainerForm>
+            <WrapperForm>
+              <Outlet />
+            </WrapperForm>
+          </ContainerForm>
+        </BgAuth>
+      )}
+    </>
   );
 }
 
 const BgAuth = styled.div`
-  width: 100%;
+  /* width: 100%; */
   height: 100vh;
   padding: 0px max(5em, 50vw - 24.2em);
   background: linear-gradient(

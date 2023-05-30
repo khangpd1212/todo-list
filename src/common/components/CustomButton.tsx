@@ -4,26 +4,29 @@ import { styled } from "styled-components";
 
 interface CustomButtonProps {
   children: ReactNode;
+  isWidthAuto?: boolean;
 }
 export default function CustomButton(props: ButtonProps & CustomButtonProps) {
-  return <ButtonStyle {...props}>{props.children}</ButtonStyle>;
+  const { children, isWidthAuto, ...propsOther } = props;
+  const autoWidth = {
+    width: "auto",
+  };
+  return (
+    <ButtonStyle {...propsOther} style={isWidthAuto ? autoWidth : {}}>
+      {children}
+    </ButtonStyle>
+  );
 }
 
 const ButtonStyle = styled(Button)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  height: auto;
   border-radius: 8px;
   width: 100%;
   font-size: 16px;
-  &.ant-btn > .anticon + span {
-    margin-inline-start: 0px;
-  }
+  padding: 10px 20px;
   &.ant-btn-primary {
     background-color: var(--primary);
     font-weight: 600;
-    padding: 22px 0px;
     color: var(--white);
   }
   &.ant-btn-primary:hover {
@@ -36,7 +39,6 @@ const ButtonStyle = styled(Button)`
   }
 
   &.ant-btn-text {
-    padding: 20px 15px;
     color: var(--gray500);
   }
 `;
